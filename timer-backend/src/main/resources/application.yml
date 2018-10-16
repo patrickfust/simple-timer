@@ -1,0 +1,14 @@
+micronaut:
+  application:
+    name: timer-backend
+
+  router:
+    static-resources:
+      default:
+        enabled: true
+        mapping: /**
+        paths:
+        - classpath:public
+
+  server:
+      port: 9090

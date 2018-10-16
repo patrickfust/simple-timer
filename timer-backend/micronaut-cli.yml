@@ -1,0 +1,5 @@
+profile: service
+defaultPackage: timer.backend
+---
+testFramework: spock
+sourceLanguage: groovy
