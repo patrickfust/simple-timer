@@ -10,6 +10,8 @@ class TimerScheduleService {
 
     private TimerBackendWebSocket timerBackendWebSocket
 
+    private String lastElapsed = ''
+
     private TimerService timerService
 
     TimerScheduleService(TimerService timerService, TimerBackendWebSocket timerBackendWebSocket) {
@@ -20,7 +22,10 @@ class TimerScheduleService {
     @Scheduled(fixedRate = "1s")
     void everySecond() {
         String elapsed = timerService.elapsed
-        timerBackendWebSocket.sendElapsed(elapsed)
+        if (elapsed != lastElapsed) {
+            timerBackendWebSocket.sendElapsed(elapsed)
+            lastElapsed = elapsed
+        }
     }
 
 }

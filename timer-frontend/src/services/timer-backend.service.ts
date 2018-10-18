@@ -10,21 +10,39 @@ export class TimerBackendService {
     private baseUrl: string;
     private backendHostname: string;
     private backendPort: number;
+    private backendSecure: boolean;
 
-    constructor(hostname: string, port: number) {
-        this.baseUrl = 'http://' + hostname + ':' + port + '/timer/';
+    constructor(hostname: string, port: number, protocol: string) {
+        this.backendSecure = protocol.toLocaleLowerCase().startsWith('https');
+        if (location.port !== ('' + port)) {
+            this.backendSecure = false;
+        }
+        if (port === 0) {
+            console.log('port is 0, so find correct port. backendSecure: ' + this.backendSecure);
+            if (this.backendSecure) {
+                port = 443;
+            } else {
+                port = 80;
+            }
+        }
+        const baseProtocol = this.backendSecure ? 'https://' : 'http://';
+        this.baseUrl = `${baseProtocol}${hostname}:${port}/timer/`;
         this.backendHostname = hostname;
         this.backendPort = port;
+        console.log('Constructing TimerBackendService with: ' + this.baseUrl);
     }
 
     public initializeWebSocket(): void {
-        const webSocket = new WebSocket('ws://' + this.backendHostname + ':' + this.backendPort + '/ws/timer');
+        const websocketProtocol = this.backendSecure ? 'wss://' : 'ws://';
+        const websocketUrl = websocketProtocol + this.backendHostname + ':' + this.backendPort + '/ws/timer';
+        console.log('Initializing websocket to: ' + websocketUrl);
+        const webSocket = new WebSocket(websocketUrl);
         webSocket.onmessage = (data) => TimerBackendService.updateTimerStatusText(data.data);
         webSocket.onclose = () => {
             TimerBackendService.updateTimerStatusText('Lost conn...');
             setTimeout(() => {
                 this.initializeWebSocket();
-            }, 1000);
+            }, 5000);
         };
     }
 
@@ -39,4 +57,4 @@ export class TimerBackendService {
 }
 
 export const timerBackendService = new TimerBackendService(location.hostname,
-    (location.port === '8080' ? 9090 : Number(location.port)));
+    (location.port === '8080' ? 9090 : Number(location.port)), location.protocol);

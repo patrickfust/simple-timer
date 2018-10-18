@@ -48,9 +48,14 @@ run.jvmArgs('-noverify', '-XX:TieredStopAtLevel=1')
 
 mainClassName = "timer.backend.Application"
 
+task clearFrontend(type: Delete) {
+    delete 'src/main/resources/public'
+}
+
 task copyFrontend(type: Copy) {
     from '../timer-frontend/dist'
     into 'src/main/resources/public'
 }
 
+copyFrontend.dependsOn clearFrontend
 build.dependsOn copyFrontend

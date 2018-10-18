@@ -2,7 +2,7 @@ import axios, { AxiosPromise, AxiosResponse, AxiosRequestConfig } from 'axios';
 
 
 // Set Api
-const api = "";
+const api = '';
 
 export class HttpService {
 

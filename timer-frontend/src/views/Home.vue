@@ -1,6 +1,6 @@
 <template>
     <div>
-        <timer-control v-if="showTimerControl" />
+        <timer-control v-if="$store.getters.getShowTimerControl" />
         <timer-status />
     </div>
 </template>
@@ -9,7 +9,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import TimerStatus from '@/components/TimerStatus.vue'; // @ is an alias to /src
 import TimerControl from '@/components/TimerControl.vue';
-import {timerBackendService} from "@/services/timer-backend.service";
+import {timerBackendService} from '@/services/timer-backend.service';
 
 @Component({
   components: {
@@ -19,10 +19,7 @@ import {timerBackendService} from "@/services/timer-backend.service";
 })
 export default class Home extends Vue {
 
-    private showTimerControl = false;
-
-    private mounted() : void {
-        this.showTimerControl = (location.hostname.toLocaleLowerCase() == 'localhost');
+    private mounted(): void {
         timerBackendService.initializeWebSocket();
     }
 
